@@ -6,19 +6,24 @@ import (
 	"time"
 )
 
+func randNumber(min int, max int) int {
+	num := rand.Intn(max-min) + min
+	return num
+}
+
 func generatePassword(length int) (string, error) {
 	if length <= 0 {
-		return "", errors.New("length is is too small")
+		return "", errors.New("length is too small")
 	}
 
 	rand.Seed(time.Now().UnixNano())
 
 	charset := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-	result := make([]byte, length)
+	password := make([]byte, length)
 
-	for i := range result {
-		result[i] = charset[rand.Intn(len(charset))]
+	for i := range password {
+		password[i] = charset[rand.Intn(len(charset))]
 	}
 
-	return string(result), nil
+	return string(password), nil
 }
