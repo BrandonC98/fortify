@@ -18,7 +18,6 @@ func TestRandNumber(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			actual := randNumber(test.inputMin, test.inputMax)
-			println(actual)
 			assert.Check(t, actual >= test.inputMin && actual <= test.inputMax)
 		})
 	}

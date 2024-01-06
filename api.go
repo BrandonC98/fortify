@@ -44,7 +44,7 @@ func generateHandler(config Config) gin.HandlerFunc {
 	}
 }
 
-func startServer() {
+func startServer(config Config) {
 	router := router()
 
 	router.GET("/ping", pingHandler)

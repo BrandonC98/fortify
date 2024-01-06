@@ -39,7 +39,7 @@ func TestPingEndpoint(t *testing.T) {
 }
 
 func TestGenerateEndpoint(t *testing.T) {
-	config = Config{
+	config := Config{
 		Mode:            "test",
 		Port:            8080,
 		StringMinLength: 7,

@@ -1,0 +1,4 @@
+mode: debug
+port: 8080
+stringMin: 7
+stringMax: 25
