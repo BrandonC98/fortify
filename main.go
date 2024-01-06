@@ -9,6 +9,7 @@ import (
 
 func main() {
 	config := getConfig()
+
 	startServer(config)
 }
 
