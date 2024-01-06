@@ -58,7 +58,6 @@ func TestGenerateEndpoint(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-
 			router := gin.Default()
 			router.GET(test.endpoint, generateHandler(config))
 
