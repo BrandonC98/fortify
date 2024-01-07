@@ -40,12 +40,10 @@ func TestPingEndpoint(t *testing.T) {
 
 func TestGenerateEndpoint(t *testing.T) {
 	config := Config{
-		Mode:            "test",
 		Port:            8080,
 		StringMinLength: 7,
 		StringMaxLength: 25,
 	}
-	gin.SetMode(config.Mode)
 	var tests = []struct {
 		name         string
 		endpoint     string

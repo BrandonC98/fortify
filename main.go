@@ -3,8 +3,7 @@ package main
 import (
 	"log"
 	"os"
-
-	"gopkg.in/yaml.v3"
+	"strconv"
 )
 
 func main() {
@@ -14,23 +13,33 @@ func main() {
 }
 
 func getConfig() Config {
-	f, err := os.ReadFile("config.yml")
-	if err != nil {
-		log.Fatal(err)
+	var error error
+	var port, strMin, strMax int
+
+	port, error = strconv.Atoi(os.Getenv("PASSMAN_PORT"))
+	if error != nil {
+		log.Fatal(error)
+	}
+	strMin, error = strconv.Atoi(os.Getenv("PASSMAN_STRING_MIN"))
+	if error != nil {
+		log.Fatal(error)
+	}
+	strMax, error = strconv.Atoi(os.Getenv("PASSMAN_STRING_MAX"))
+	if error != nil {
+		log.Fatal(error)
 	}
 
-	var c Config
-	err = yaml.Unmarshal(f, &c)
-	if err != nil {
-		log.Fatal(err)
+	c := Config{
+		Port:            port,
+		StringMinLength: strMin,
+		StringMaxLength: strMax,
 	}
 
 	return c
 }
 
 type Config struct {
-	Mode            string `yaml:"mode"`
-	Port            int    `yaml:"port"`
-	StringMaxLength int    `yaml:"stringMax"`
-	StringMinLength int    `yaml:"stringMin"`
+	Port            int
+	StringMaxLength int
+	StringMinLength int
 }
