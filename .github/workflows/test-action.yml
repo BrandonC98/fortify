@@ -2,7 +2,7 @@ name: Test Service
 
 on:
   push:
-    branches: [ main ]
+    branches: [ mainOFF ]
   workflow_dispatch:
 
 jobs:
@@ -20,6 +20,9 @@ jobs:
       with:
         just-version: latest
 
+
+    - name: create .env file
+      run: just gen-dotenv test
 
     - name: run unit tests
       run: just test
