@@ -17,7 +17,7 @@ jobs:
       - name: run tests
         uses: BrandonC98/passMan-infra/actions/run-tests@main
 
-  static analysis test:
+  static-analysis-test:
     runs-on: ubuntu-latest
 
     steps:
