@@ -1,0 +1,39 @@
+name: QA Test
+
+on:
+  push:
+    branches: [ main ]
+    workflow_dispatch:
+
+jobs:
+
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v2
+
+      - name: run tests
+        uses: BrandonC98/passMan-infra/actions/run-tests@main
+
+  static analysis test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v2
+
+      - name: run linter
+        uses: BrandonC98/passMan-infra/actions/run-linter@main
+
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v2
+
+      - name: build service
+        uses: BrandonC98/passMan-infra/actions/build-service@main
