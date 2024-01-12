@@ -38,7 +38,7 @@ run-container port="8080":
 # Generate a .env file
 gen-dotenv mode="debug" port="8080" min="7" max="25":
 	touch .env
-	echo "GIN_MODE={{mode}}" >> .env
-	echo "PASSMAN_PORT={{port}}" >> .env
-	echo "PASSMAN_STRING_MIN={{min}}" >> .env
-	echo "PASSMAN_STRING_MAX={{max}}" >> .env
+	echo "GIN_MODE=\"{{mode}}\"" >> .env
+	echo "PASSMAN_PORT=\"{{port}}\"" >> .env
+	echo "PASSMAN_STRING_MIN=\"{{min}}\"" >> .env
+	echo "PASSMAN_STRING_MAX=\"{{max}}"\" >> .env
