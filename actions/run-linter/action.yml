@@ -1,0 +1,19 @@
+name: Run Linter
+
+description: 'Runs linter on Go code'
+
+
+runs:
+  using: "composite"
+  steps:
+    - name: provision Go
+      uses: actions/setup-go@v3
+
+    - name: provision just 
+      uses: taiki-e/install-action@just
+      with:
+        just-version: latest
+
+    - name: run linter
+      run: just lint
+      shell: bash
