@@ -26,7 +26,7 @@ run-build $GIN_MODE="debug":
 
 # Run linter
 lint:
-	golangci-lint run ./...
+	golangci-lint run ./... --verbose
 
 # Build the docker image
 build-image:
