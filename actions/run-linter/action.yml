@@ -1,19 +1,28 @@
-name: Run Linter
+name: Run golangci-lint
 
-description: 'Runs linter on Go code'
+description: 'Runs golangci-lint on source code'
 
 
 runs:
   using: "composite"
   steps:
     - name: provision Go
-      uses: actions/setup-go@v3
+      uses: actions/setup-go@v4
 
     - name: provision just 
       uses: taiki-e/install-action@just
       with:
         just-version: latest
 
-    - name: run linter
+    - name: provision golangci-lint
+      run: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin
+      shell: bash
+
+    - name: golangci-lint version 
+      run: golangci-lint -v
+      shell: bash
+
+
+    - name: run golangci-lint
       run: just lint
       shell: bash
