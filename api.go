@@ -24,6 +24,7 @@ func generateHandler(config Config) gin.HandlerFunc {
 		var key string
 		if gin.Mode() == "release" {
 			// use AWS Secrets manager to get key
+			print("Functionality not yet implmented")
 		} else {
 			key = "PASSMAN_PASS_GEN_KEY"
 		}
