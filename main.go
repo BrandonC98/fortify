@@ -13,20 +13,20 @@ func main() {
 }
 
 func getConfig() Config {
-	var error error
+	var errorMsg error
 	var port, strMin, strMax int
 
-	port, error = strconv.Atoi(os.Getenv("PASSMAN_PORT"))
-	if error != nil {
-		log.Fatal(error)
+	port, errorMsg = strconv.Atoi(os.Getenv("PASSMAN_PORT"))
+	if errorMsg != nil {
+		log.Fatal(errorMsg)
 	}
-	strMin, error = strconv.Atoi(os.Getenv("PASSMAN_STRING_MIN"))
-	if error != nil {
-		log.Fatal(error)
+	strMin, errorMsg = strconv.Atoi(os.Getenv("PASSMAN_STRING_MIN"))
+	if errorMsg != nil {
+		log.Fatal(errorMsg)
 	}
-	strMax, error = strconv.Atoi(os.Getenv("PASSMAN_STRING_MAX"))
-	if error != nil {
-		log.Fatal(error)
+	strMax, errorMsg = strconv.Atoi(os.Getenv("PASSMAN_STRING_MAX"))
+	if errorMsg != nil {
+		log.Fatal(errorMsg)
 	}
 
 	c := Config{
