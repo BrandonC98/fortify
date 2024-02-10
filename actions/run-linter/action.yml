@@ -8,6 +8,8 @@ runs:
   steps:
     - name: provision Go
       uses: actions/setup-go@v4
+      with:
+        go-version: 1.18
 
     - name: provision just 
       uses: taiki-e/install-action@just
