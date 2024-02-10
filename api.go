@@ -39,9 +39,7 @@ func generateHandler(config Config) gin.HandlerFunc {
 			log.Fatal(err)
 		}
 
-		c.JSON(http.StatusOK, gin.H{
-			"message": ecryptedPassword,
-		})
+		c.String(http.StatusOK, ecryptedPassword)
 	}
 }
 
