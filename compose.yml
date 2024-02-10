@@ -1,0 +1,6 @@
+services:
+  pass-gen:
+    build: ../passMan-pass-gen
+    env_file: ../passMan-pass-gen/.env
+    ports:
+      - "8080:8080"
