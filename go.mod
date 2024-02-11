@@ -5,6 +5,14 @@ go 1.18
 require github.com/stretchr/testify v1.8.4
 
 require (
+	github.com/ProtonMail/go-crypto v0.0.0-20230717121422-5aa5874ade95 // indirect
+	github.com/ProtonMail/go-mime v0.0.0-20230322103455-7d82a3887f2f // indirect
+	github.com/cloudflare/circl v1.3.3 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
+)
+
+require (
+	github.com/ProtonMail/gopenpgp/v2 v2.7.4
 	github.com/bytedance/sonic v1.10.2 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20230717121745-296ad89f973d // indirect
 	github.com/chenzhuoyu/iasm v0.9.1 // indirect

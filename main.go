@@ -30,7 +30,6 @@ func getConfig() Config {
 	}
 
 	return c
-
 }
 
 type Config struct {
