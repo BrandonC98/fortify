@@ -22,6 +22,14 @@ run-build $GIN_MODE="debug":
 lint:
 	golangci-lint run ./... --verbose
 
+# Build docker image
+build-image:
+	docker build -t interface .
+
+run-container port="8081":
+	docker run -p {{port}}:$PASSMAN_PORT interface:latest
+
+
 # Generate a .env file
 gen-dotenv mode="debug" port="8080" min="7" max="25":
 	touch .env
