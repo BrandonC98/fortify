@@ -1,0 +1,12 @@
+services:
+  pass-gen:
+    build: ../../passMan-pass-gen
+    env_file: passMan-pass-gen-env
+    ports:
+      - "8080:8080"
+
+  interface:
+    build: ../../passMan-interface
+    env_file: passMan-interface-env
+    ports:
+      - "8081:8081"
