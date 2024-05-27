@@ -21,10 +21,16 @@ func startServer(config Config) {
 
 	router.GET("/generatePassword", generatePasswordHandler(fmt.Sprintf("%s/generate", config.PassGenURL), &client))
 
+	router.POST("/save")
+
 	err := router.Run(fmt.Sprintf(":%d", config.Port))
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func saveHandler(name string, password string) {
+
 }
 
 func generatePasswordHandler(endpointURL string, client HTTPClient) gin.HandlerFunc {

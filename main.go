@@ -13,7 +13,7 @@ func main() {
 func getConfig() Config {
 	var errorMsg error
 	var port int
-	var passGenURL, dataAccessURL string
+	var passGenURL, dbUser, dbHost, dbPassword string
 
 	port, errorMsg = strconv.Atoi(os.Getenv("PASSMAN_PORT"))
 	if errorMsg != nil {
@@ -21,19 +21,17 @@ func getConfig() Config {
 	}
 
 	passGenURL = os.Getenv("PASSMAN_PASS_GEN_URL")
-	dataAccessURL = os.Getenv("PASSMAN_DATA_ACCESS_URL")
+	dbUser = os.Getenv("DB_USER")
+	dbHost = os.Getenv("DB_HOST")
+	dbPassword = os.Getenv("DB_PASSWORD")
 
 	c := Config{
-		Port:          port,
-		PassGenURL:    passGenURL,
-		DataAccessURL: dataAccessURL,
+		Port:       port,
+		PassGenURL: passGenURL,
+		DBUser:     dbUser,
+		DBHost:     dbHost,
+		DBPassword: dbPassword,
 	}
 
 	return c
-}
-
-type Config struct {
-	Port          int
-	PassGenURL    string
-	DataAccessURL string
 }

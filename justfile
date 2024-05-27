@@ -35,3 +35,21 @@ gen-dotenv mode="debug" port="8080" min="7" max="25":
 	touch .env
 	echo "GIN_MODE=\"{{mode}}\"" >> .env
 	echo "PASSMAN_PORT=\"{{port}}\"" >> .env
+
+# Create the passMan db user. pass in a mysql root user's login
+inital-db-setup username="root" password="password":
+	echo "Create db"
+	mysql -u {{username}} -p"{{password}}" -e "CREATE DATABASE passMan_db;"
+	echo "creating user"
+	mysql -u {{username}} -p"{{password}}" -e "CREATE USER '${DB_USER}'@'${DB_HOST}' IDENTIFIED BY '${DB_PASSWORD}';"
+	echo "Adding privileges"
+	mysql -u {{username}} -p"{{password}}" -e "GRANT ALL PRIVILEGES ON passMan_db.* TO '${DB_USER}'@'${DB_HOST}';"
+
+run-sql file:
+	#!/usr/bin/env bash
+	set -euxo pipefail
+	cd sql/
+	mysql --host=${DB_HOST} --user=${DB_USER} --password=${DB_PASSWORD} passMan_db < {{file}}
+
+sql-create-tables:
+	just run-sql create_tables.sql
