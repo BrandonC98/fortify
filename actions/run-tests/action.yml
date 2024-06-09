@@ -7,6 +7,10 @@ runs:
   steps:
     - name: provision Go
       uses: actions/setup-go@v3
+      with:
+        go-version-file: 'go.mod'
+    - run: go version
+      shell: bash
 
     - name: provision just 
       uses: taiki-e/install-action@just
