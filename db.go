@@ -2,20 +2,40 @@ package main
 
 import (
 	"fmt"
-	"log"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
+	"log/slog"
 )
 
 func Database(config Config) *gorm.DB {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s)/passMan_db", config.DBUser, config.DBPassword, config.DBHost)
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	dsn := fmt.Sprintf("%s:%s@tcp(%s)/", config.DBUser, config.DBPassword, config.DBHost)
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
 	if err != nil {
-		log.Fatal(err)
+		slog.Error(err.Error())
 	}
 
-	db.AutoMigrate(&Credentials{})
+	dbName := "passman_db"
+
+	if err := db.Exec(fmt.Sprintf("CREATE DATABASE IF NOT EXISTS %s", dbName)).Error; err != nil {
+		slog.Error(err.Error())
+	}
+
+	dsn = fmt.Sprintf("%s:%s@tcp(%s)/%s", config.DBUser, config.DBPassword, config.DBHost, dbName)
+	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
+	if err != nil {
+		slog.Error(err.Error())
+	}
+
+	err = db.AutoMigrate(&Credentials{})
+	if err != nil {
+		slog.Error(err.Error())
+	}
 
 	return db
 }
@@ -23,7 +43,7 @@ func Database(config Config) *gorm.DB {
 func AddCredsRecord(creds *Credentials, db *gorm.DB) {
 	result := db.Create(creds)
 	if result.Error != nil {
-		log.Fatal(result.Error)
+		slog.Error(result.Error.Error())
 
 	}
 }

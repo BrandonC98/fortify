@@ -3,10 +3,13 @@ package main
 import (
 	"fmt"
 	"log"
+	"log/slog"
 	"net/http"
+	"strings"
 
 	"github.com/ProtonMail/gopenpgp/v2/helper"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 func startServer(config Config) {
@@ -14,6 +17,7 @@ func startServer(config Config) {
 	router.LoadHTMLGlob("templates/*")
 	router.Static("/static", "./static")
 	var client standardHTTPClient
+	db := Database(config)
 
 	router.GET("/ping", pingHandler)
 
@@ -21,7 +25,8 @@ func startServer(config Config) {
 
 	router.GET("/generatePassword", generatePasswordHandler(fmt.Sprintf("%s/generate", config.PassGenURL), &client))
 
-	router.POST("/save")
+	router.POST("/save", saveHandler(db))
+	router.GET("/show", showHandler(db))
 
 	err := router.Run(fmt.Sprintf(":%d", config.Port))
 	if err != nil {
@@ -29,7 +34,33 @@ func startServer(config Config) {
 	}
 }
 
-func saveHandler(name string, password string) {
+func showHandler(db *gorm.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		creds := retriveAllCreds(db)
+		var sb strings.Builder
+		for i := 0; i < len(creds); i++ {
+			sb.WriteString(fmt.Sprint(creds[i].Name, ": ", creds[i].Passwd, "\n"))
+		}
+
+		slog.Info("List: " + sb.String())
+
+		c.String(200, sb.String())
+	}
+}
+
+func saveHandler(db *gorm.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		println("Saving")
+		var credentials Credentials
+		if err := c.ShouldBindJSON(&credentials); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		slog.Info("Pass => " + credentials.Passwd)
+		AddCredsRecord(&credentials, db)
+
+	}
 
 }
 
@@ -48,7 +79,8 @@ func generatePasswordHandler(endpointURL string, client HTTPClient) gin.HandlerF
 
 		plainPassword, err := helper.DecryptMessageWithPassword([]byte(key), password)
 		if err != nil {
-			log.Fatal(err)
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
 		}
 		c.JSON(http.StatusOK, gin.H{"message": plainPassword})
 	}

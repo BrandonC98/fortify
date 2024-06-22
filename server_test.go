@@ -7,10 +7,62 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ProtonMail/gopenpgp/v2/helper"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
+
+func TestSaveEndpoint(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	db, mock, err := sqlmock.New()
+	dsn := "TESTING_DB"
+	assert.NoError(t, err)
+	defer db.Close()
+	var tests = []struct {
+		name        string
+		endpoint    string
+		requestType string
+		statusCode  int
+		body        string
+	}{
+		{"successfully hit the show endpoint", "/save", "GET", 200, "website1: pass1"},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			gormDB, err := gorm.Open(mysql.New(mysql.Config{
+				DSN:                       dsn,
+				Conn:                      db,
+				SkipInitializeWithVersion: true,
+			}), &gorm.Config{})
+
+			assert.NoError(t, err)
+
+			mock.ExpectBegin()
+			mock.ExpectExec("INSERT INTO `credentials`").
+				WithArgs("website1", "pass1", 1).
+				WillReturnResult(sqlmock.NewResult(1, 1))
+
+			mock.ExpectCommit()
+
+			router := gin.Default()
+			router.GET(test.endpoint, saveHandler(gormDB))
+
+			req, err := http.NewRequest(test.requestType, test.endpoint, nil)
+			assert.Nil(t, err)
+
+			recorder := httptest.NewRecorder()
+			router.ServeHTTP(recorder, req)
+
+			assert.Nil(t, mock.ExpectationsWereMet())
+			assert.Equal(t, test.statusCode, recorder.Code)
+			assert.Equal(t, test.body, recorder.Body.String())
+		})
+	}
+}
 
 func TestPingEndpoint(t *testing.T) {
 	gin.SetMode(gin.TestMode)

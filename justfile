@@ -26,15 +26,19 @@ lint:
 build-image:
 	docker build -t interface .
 
-run-container port="8081":
+run-container port="9002":
 	docker run -p {{port}}:$PASSMAN_PORT interface:latest
 
 
 # Generate a .env file
-gen-dotenv mode="debug" port="8080" min="7" max="25":
+gen-dotenv mode="debug" port="9002" pass-gen-url="http://localhost:8080" db-user="passMan2" db-host="localhost" db-password="passManPassword":
 	touch .env
 	echo "GIN_MODE=\"{{mode}}\"" >> .env
 	echo "PASSMAN_PORT=\"{{port}}\"" >> .env
+	echo "PASSMAN_PASS_GEN_URL=\"{{pass-gen-url}}\"" >> .env
+	echo "DB_USER=\"{{db-user}}\"" >> .env
+	echo "DB_HOST=\"{{db-host}}\"" >> .env
+	echo "DB_PASSWORD=\"{{db-password}}\"" >> .env
 
 # Create the passMan db user. pass in a mysql root user's login
 inital-db-setup username="root" password="password":
