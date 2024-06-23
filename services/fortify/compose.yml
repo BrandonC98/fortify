@@ -1,0 +1,23 @@
+services:
+  interface:
+    build: .
+    env_file: .env
+    container_name: interface-container
+    ports:
+      - "9002:9002"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: on-failure
+
+  db:
+    image: mysql:lts 
+    env_file: db-env
+    container_name: db-container
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -p$MYSQL_ROOT_PASSWORD"]
+      interval: 30s
+      timeout: 10s
+      retries: 5

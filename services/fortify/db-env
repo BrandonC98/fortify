@@ -1,0 +1,4 @@
+MYSQL_ROOT_PASSWORD=password
+MYSQL_DATABASE=passman_db
+MYSQL_USER=passMan2
+MYSQL_PASSWORD=passManPassword
