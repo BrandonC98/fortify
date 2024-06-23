@@ -1,8 +1,10 @@
-name: QA Test
+name: Generator QA Test
 
 on:
   push:
     branches: [ main ]
+    path:
+      - 'services/generator/**'
     workflow_dispatch:
 
 permissions:
@@ -18,7 +20,9 @@ jobs:
         uses: actions/checkout@v2
 
       - name: run tests
-        uses: BrandonC98/passMan-infra/actions/run-tests@main
+        uses: ./actions/test-go
+        with:
+          working-directory: ./services/generator
 
   static-analysis-test:
     runs-on: ubuntu-latest
@@ -26,10 +30,13 @@ jobs:
     steps:
       - name: checkout code
         uses: actions/checkout@v2
+        with:
+          working-directory: ./services/generator
 
       - name: run linter
-        uses: BrandonC98/passMan-infra/actions/run-linter@main
-
+        uses: ./actions/lint-go
+        with:
+          working-directory: ./services/generator
 
   build:
     runs-on: ubuntu-latest
@@ -37,6 +44,10 @@ jobs:
     steps:
       - name: checkout code
         uses: actions/checkout@v2
+        with:
+          working-directory: ./services/generator
 
       - name: build service
-        uses: BrandonC98/passMan-infra/actions/build-service@main
+        uses: ./actions/build-go
+        with:
+          working-directory: ./services/generator

@@ -1,4 +1,4 @@
-module github.com/BrandonC98/pass-gen-svc
+module github.com/BrandonC98/fortify/services/generator
 
 go 1.22
 

@@ -1,0 +1,31 @@
+name: Build Service
+
+description: 'Build Go services'
+inputs:
+  working-directory:
+    description: 'working directory to run commands'
+    required: true
+    default: '.'
+
+runs:
+  using: "composite"
+  steps:
+    - name: provision Go
+      uses: actions/setup-go@v3
+      with:
+        go-version-file: "${{ inputs.working-directory }}/go.mod"
+    - run: |
+        cd ${{ inputs.working-directory }}
+        go version
+      shell: bash
+
+    - name: provision just 
+      uses: taiki-e/install-action@just
+      with:
+        just-version: latest
+
+    - name: build service
+      run: |
+        cd ${{ inputs.working-directory }}
+        just build
+      shell: bash

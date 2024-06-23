@@ -1,4 +1,4 @@
-module github.com/BrandonC98/passMan-interface
+module github.com/BrandonC98/fortify/services/fortify
 
 go 1.22
 
