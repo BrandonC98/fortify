@@ -1,0 +1,4 @@
+GIN_MODE=debug
+PASSMAN_PORT=8081
+PASSMAN_PASS_GEN_URL=http://pass-gen:8080
+PASSMAN_DATA_ACCESS_URL=http://data-access:8082
