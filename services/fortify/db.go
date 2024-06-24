@@ -42,7 +42,6 @@ func newCredentialRepository(host string, name string, user string, password str
 }
 
 func (r *CredentialRepository) Setup() {
-
 	if err := r.Exec(fmt.Sprintf("CREATE DATABASE IF NOT EXISTS %s", r.name)).Error; err != nil {
 		slog.Error(err.Error())
 	}

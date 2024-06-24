@@ -1,7 +1,7 @@
 package main
 
 import (
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"strings"
@@ -24,7 +24,7 @@ func TestGetGeneratedPassword(t *testing.T) {
 	password := "test"
 	mockResp := &http.Response{
 		StatusCode: http.StatusOK,
-		Body:       ioutil.NopCloser(strings.NewReader(password)),
+		Body:       io.NopCloser(strings.NewReader(password)),
 	}
 
 	client := MockHTTPClient{

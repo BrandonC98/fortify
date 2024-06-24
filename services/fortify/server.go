@@ -44,7 +44,7 @@ func showHandler(r CredsRepo) gin.HandlerFunc {
 
 		slog.Info("List: " + sb.String())
 
-		c.String(200, sb.String())
+		c.String(http.StatusOK, sb.String())
 	}
 }
 
@@ -62,7 +62,6 @@ func saveHandler(r CredsRepo) gin.HandlerFunc {
 
 		c.String(http.StatusOK, "successful")
 	}
-
 }
 
 func generatePasswordHandler(endpointURL string, client HTTPClient) gin.HandlerFunc {

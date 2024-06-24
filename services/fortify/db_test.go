@@ -33,7 +33,6 @@ func TestAddCredsRecord1(t *testing.T) {
 	}
 
 	for _, test := range tests {
-
 		t.Run(test.name, func(t *testing.T) {
 			gormDB, err := gorm.Open(mysql.New(mysql.Config{
 				DSN:                       dsn,
@@ -84,7 +83,6 @@ func TestRetriveAllCreds(t *testing.T) {
 	}
 
 	for _, test := range tests {
-
 		t.Run(test.name, func(t *testing.T) {
 			gormDB, err := gorm.Open(mysql.New(mysql.Config{
 				DSN:                       dsn,

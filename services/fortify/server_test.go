@@ -1,7 +1,8 @@
 package main
 
 import (
-	"io/ioutil"
+	"io"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -18,7 +19,7 @@ type MockCredentialRepository struct {
 }
 
 func (m *MockCredentialRepository) AddCredsRecord(creds *Credentials) {
-	println("Mockng it up")
+	slog.Info("Mocking credentials", creds.Name, creds.Passwd)
 }
 
 func (m *MockCredentialRepository) retriveAllCreds() []Credentials {
@@ -146,7 +147,7 @@ func TestGeneratePasswordEndpoint(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			mockResp := &http.Response{
 				StatusCode: test.mockStatusCode,
-				Body:       ioutil.NopCloser(strings.NewReader(test.inputPayload)),
+				Body:       io.NopCloser(strings.NewReader(test.inputPayload)),
 			}
 
 			mockClient := MockHTTPClient{
