@@ -18,11 +18,11 @@ run:
 
 # Build the bin and place it at the relative path of bin/app
 build:
-	go build -v -o bin/app ./...
+	go build -v -o bin/generator cmd/generator/main.go
 
 # Run the build. pass in a paramater to set the gin server mode. default is debug
 run-build $GIN_MODE="debug":
-	./bin/app
+	./bin/generator
 
 # Run linter
 lint:
@@ -30,10 +30,10 @@ lint:
 
 # Build the docker image
 build-image:
-	docker build -t pass-gen .
+	docker build -t generator .
 
 run-container port="8080":
-	docker run -p {{port}}:$PASSMAN_PORT pass-gen:latest
+	docker run -p {{port}}:$PASSMAN_PORT generator:latest
  
 # Generate a .env file
 gen-dotenv mode="debug" port="8080" min="7" max="25":

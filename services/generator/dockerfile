@@ -4,7 +4,7 @@ WORKDIR /src/app
 COPY . .
 
 RUN go mod download && go mod verify
-RUN CGO_ENABLED=0 GOOS=linux go build -v -o /usr/local/bin/pass-gen ./...
+RUN CGO_ENABLED=0 GOOS=linux go build -v -o /usr/local/bin/generator cmd/generator/main.go
 
 FROM alpine:latest
 
@@ -18,8 +18,8 @@ ENV PASSMAN_PORT=$PASSMAN_PORT
 ENV PASSMAN_STRING_MIN=$PASSMAN_STRING_MIN
 ENV PASSMAN_STRING_MAX=$PASSMAN_STRING_MAX
 
-COPY --from=BUILD_IMAGE /usr/local/bin/pass-gen /usr/bin/pass-gen
+COPY --from=BUILD_IMAGE /usr/local/bin/generator /usr/bin/generator
 
 EXPOSE $PASSMAN_PORT
 
-CMD [ "pass-gen" ]
+CMD [ "generator" ]

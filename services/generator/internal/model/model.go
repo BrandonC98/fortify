@@ -1,4 +1,4 @@
-package main
+package model
 
 import (
 	"log"
@@ -6,12 +6,13 @@ import (
 	"strconv"
 )
 
-func main() {
-	config := getConfig()
-	startServer(config)
+type Config struct {
+	Port            int
+	StringMaxLength int
+	StringMinLength int
 }
 
-func getConfig() Config {
+func GetConfig() Config {
 	var errorMsg error
 	var port, strMin, strMax int
 
@@ -35,10 +36,4 @@ func getConfig() Config {
 	}
 
 	return c
-}
-
-type Config struct {
-	Port            int
-	StringMaxLength int
-	StringMinLength int
 }

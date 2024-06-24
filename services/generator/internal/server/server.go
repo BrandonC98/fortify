@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"fmt"
@@ -7,6 +7,9 @@ import (
 
 	"github.com/ProtonMail/gopenpgp/v2/helper"
 	"github.com/gin-gonic/gin"
+
+	g "github.com/BrandonC98/fortify/services/generator/internal/generation"
+	"github.com/BrandonC98/fortify/services/generator/internal/model"
 )
 
 func router() *gin.Engine {
@@ -19,17 +22,17 @@ func pingHandler(c *gin.Context) {
 	})
 }
 
-func generateHandler(config Config) gin.HandlerFunc {
+func generateHandler(config model.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var key string
 		if gin.Mode() == "release" {
 			// use AWS Secrets manager to get key
-			print("Functionality not yet implmented")
+			println("Functionality not yet implmented")
 		} else {
 			key = "PASSMAN_PASS_GEN_KEY"
 		}
 
-		plaintextPassword, err := generatePassword(randNumber(config.StringMinLength, config.StringMaxLength))
+		plaintextPassword, err := g.GenerateRandString(g.RandNumber(config.StringMinLength, config.StringMaxLength))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -43,7 +46,7 @@ func generateHandler(config Config) gin.HandlerFunc {
 	}
 }
 
-func startServer(config Config) {
+func StartServer(config model.Config) {
 	router := router()
 
 	router.GET("/ping", pingHandler)

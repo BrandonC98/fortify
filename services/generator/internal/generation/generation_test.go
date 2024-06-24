@@ -1,4 +1,4 @@
-package main
+package generation
 
 import (
 	"testing"
@@ -17,13 +17,13 @@ func TestRandNumber(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			actual := randNumber(test.inputMin, test.inputMax)
+			actual := RandNumber(test.inputMin, test.inputMax)
 			assert.Check(t, actual >= test.inputMin && actual <= test.inputMax)
 		})
 	}
 }
 
-func TestGeneratePassword(t *testing.T) {
+func TestGenerateRandString(t *testing.T) {
 	var tests = []struct {
 		name           string
 		length         int
@@ -35,14 +35,14 @@ func TestGeneratePassword(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			actual, err := generatePassword(test.length)
+			actual, err := GenerateRandString(test.length)
 			assert.NilError(t, err)
 			assert.Equal(t, len(actual), test.expectedLength)
 		})
 	}
 }
 
-func TestGeneratePasswordForErrors(t *testing.T) {
+func TestGenerateRandStringForErrors(t *testing.T) {
 	var tests = []struct {
 		name          string
 		inputLength   int
@@ -54,7 +54,7 @@ func TestGeneratePasswordForErrors(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			_, err := generatePassword(test.inputLength)
+			_, err := GenerateRandString(test.inputLength)
 			assert.Error(t, err, test.expectedError)
 		})
 	}

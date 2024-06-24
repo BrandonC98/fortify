@@ -1,10 +1,11 @@
-package main
+package server
 
 import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/BrandonC98/fortify/services/generator/internal/model"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 )
@@ -39,7 +40,7 @@ func TestPingEndpoint(t *testing.T) {
 }
 
 func TestGenerateEndpoint(t *testing.T) {
-	config := Config{
+	config := model.Config{
 		Port:            8080,
 		StringMinLength: 7,
 		StringMaxLength: 25,
