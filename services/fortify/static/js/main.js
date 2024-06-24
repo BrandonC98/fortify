@@ -26,8 +26,12 @@ document.addEventListener("DOMContentLoaded", () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(getCredentials())
         })
-        .then(handleResponse)
-        .then(data => console.log('Password saved successfully:', data))
+        .then(response => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok")
+                }
+                console.log(response.text())
+            })
         .catch(handleError);
     };
 

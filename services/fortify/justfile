@@ -31,7 +31,7 @@ run-container port="9002":
 
 
 # Generate a .env file
-gen-dotenv mode="debug" port="9002" pass-gen-url="http://localhost:8080" db-user="passMan2" db-host="localhost" db-password="passManPassword":
+gen-dotenv mode="debug" port="9002" pass-gen-url="http://localhost:8080" db-user="passMan2" db-host="db-container" db-password="passManPassword":
 	touch .env
 	echo "GIN_MODE=\"{{mode}}\"" >> .env
 	echo "PASSMAN_PORT=\"{{port}}\"" >> .env

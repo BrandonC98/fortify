@@ -9,7 +9,6 @@ import (
 
 	"github.com/ProtonMail/gopenpgp/v2/helper"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 func startServer(config Config) {
@@ -17,7 +16,8 @@ func startServer(config Config) {
 	router.LoadHTMLGlob("templates/*")
 	router.Static("/static", "./static")
 	var client standardHTTPClient
-	db := Database(config)
+	r := newCredentialRepository(config.DBHost, "passman_db", config.DBUser, config.DBPassword)
+	r.Setup()
 
 	router.GET("/ping", pingHandler)
 
@@ -25,8 +25,8 @@ func startServer(config Config) {
 
 	router.GET("/generatePassword", generatePasswordHandler(fmt.Sprintf("%s/generate", config.PassGenURL), &client))
 
-	router.POST("/save", saveHandler(db))
-	router.GET("/show", showHandler(db))
+	router.POST("/save", saveHandler(r))
+	router.GET("/show", showHandler(r))
 
 	err := router.Run(fmt.Sprintf(":%d", config.Port))
 	if err != nil {
@@ -34,9 +34,9 @@ func startServer(config Config) {
 	}
 }
 
-func showHandler(db *gorm.DB) gin.HandlerFunc {
+func showHandler(r CredsRepo) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		creds := retriveAllCreds(db)
+		creds := r.retriveAllCreds()
 		var sb strings.Builder
 		for i := 0; i < len(creds); i++ {
 			sb.WriteString(fmt.Sprint(creds[i].Name, ": ", creds[i].Passwd, "\n"))
@@ -48,7 +48,7 @@ func showHandler(db *gorm.DB) gin.HandlerFunc {
 	}
 }
 
-func saveHandler(db *gorm.DB) gin.HandlerFunc {
+func saveHandler(r CredsRepo) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		println("Saving")
 		var credentials Credentials
@@ -58,8 +58,9 @@ func saveHandler(db *gorm.DB) gin.HandlerFunc {
 		}
 
 		slog.Info("Pass => " + credentials.Passwd)
-		AddCredsRecord(&credentials, db)
+		r.AddCredsRecord(&credentials)
 
+		c.String(http.StatusOK, "successful")
 	}
 
 }

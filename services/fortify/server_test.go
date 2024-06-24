@@ -7,49 +7,50 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ProtonMail/gopenpgp/v2/helper"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
+	"github.com/stretchr/testify/mock"
 )
 
-func TestSaveEndpoint(t *testing.T) {
+type MockCredentialRepository struct {
+	mock.Mock
+}
+
+func (m *MockCredentialRepository) AddCredsRecord(creds *Credentials) {
+	println("Mockng it up")
+}
+
+func (m *MockCredentialRepository) retriveAllCreds() []Credentials {
+	c := []Credentials{
+		{
+			ID:     1,
+			Name:   "key",
+			Passwd: "val",
+		},
+	}
+
+	return c
+}
+func TestShowEndpoint(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	db, mock, err := sqlmock.New()
-	dsn := "TESTING_DB"
-	assert.NoError(t, err)
-	defer db.Close()
 	var tests = []struct {
-		name        string
-		endpoint    string
-		requestType string
-		statusCode  int
-		body        string
+		name               string
+		endpoint           string
+		requestType        string
+		expectedStatusCode int
+		expectedBody       string
 	}{
-		{"successfully hit the show endpoint", "/save", "GET", 200, "website1: pass1"},
+		{"successfully hit the show endpoint", "/show", "GET", 200, "key: val\n"},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			gormDB, err := gorm.Open(mysql.New(mysql.Config{
-				DSN:                       dsn,
-				Conn:                      db,
-				SkipInitializeWithVersion: true,
-			}), &gorm.Config{})
-
-			assert.NoError(t, err)
-
-			mock.ExpectBegin()
-			mock.ExpectExec("INSERT INTO `credentials`").
-				WithArgs("website1", "pass1", 1).
-				WillReturnResult(sqlmock.NewResult(1, 1))
-
-			mock.ExpectCommit()
+			testRepo := new(MockCredentialRepository)
+			testRepo.On("retriveAllCreds")
 
 			router := gin.Default()
-			router.GET(test.endpoint, saveHandler(gormDB))
+			router.GET(test.endpoint, showHandler(testRepo))
 
 			req, err := http.NewRequest(test.requestType, test.endpoint, nil)
 			assert.Nil(t, err)
@@ -57,9 +58,40 @@ func TestSaveEndpoint(t *testing.T) {
 			recorder := httptest.NewRecorder()
 			router.ServeHTTP(recorder, req)
 
-			assert.Nil(t, mock.ExpectationsWereMet())
+			assert.Equal(t, test.expectedStatusCode, recorder.Code)
+			assert.Equal(t, test.expectedBody, recorder.Body.String())
+		})
+	}
+}
+
+func TestSaveEndpoint(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	var tests = []struct {
+		name        string
+		endpoint    string
+		requestType string
+		statusCode  int
+		body        string
+	}{
+		{"successfully hit the show endpoint", "/save", "POST", 200, "{ \"website1\": \"pass1\"}"},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			testRepo := new(MockCredentialRepository)
+			testRepo.On("AddCredsRecord")
+
+			router := gin.Default()
+			router.POST(test.endpoint, saveHandler(testRepo))
+
+			req, err := http.NewRequest(test.requestType, test.endpoint, strings.NewReader(test.body))
+			assert.Nil(t, err)
+
+			recorder := httptest.NewRecorder()
+			router.ServeHTTP(recorder, req)
+
 			assert.Equal(t, test.statusCode, recorder.Code)
-			assert.Equal(t, test.body, recorder.Body.String())
+			assert.Equal(t, "successful", recorder.Body.String())
 		})
 	}
 }

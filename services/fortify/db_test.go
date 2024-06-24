@@ -10,11 +10,18 @@ import (
 	"gorm.io/gorm"
 )
 
-func TestAddCredsRecord(t *testing.T) {
+func TestAddCredsRecord1(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	dsn := "TESTING_DB"
 	assert.NoError(t, err)
 	defer db.Close()
+	r := CredentialRepository{
+		user:     "user",
+		host:     "host",
+		name:     "name",
+		password: "password",
+	}
+
 	var tests = []struct {
 		name          string
 		expectedCreds Credentials
@@ -35,6 +42,8 @@ func TestAddCredsRecord(t *testing.T) {
 			}), &gorm.Config{})
 			assert.NoError(t, err)
 
+			r.DB = *gormDB
+
 			mock.ExpectBegin()
 			mock.ExpectExec("INSERT INTO `credentials`").
 				WithArgs(test.expectedCreds.Name, test.expectedCreds.Passwd, 1).
@@ -42,7 +51,7 @@ func TestAddCredsRecord(t *testing.T) {
 
 			mock.ExpectCommit()
 
-			AddCredsRecord(&test.expectedCreds, gormDB)
+			r.AddCredsRecord(&test.expectedCreds)
 
 			assert.Nil(t, mock.ExpectationsWereMet())
 			assert.Equal(t, uint(1), test.expectedCreds.ID)
@@ -57,6 +66,13 @@ func TestRetriveAllCreds(t *testing.T) {
 	dsn := "TESTING_DB"
 	assert.NoError(t, err)
 	defer db.Close()
+	r := CredentialRepository{
+		user:     "user",
+		host:     "host",
+		name:     "name",
+		password: "password",
+	}
+
 	var tests = []struct {
 		name          string
 		expectedCreds Credentials
@@ -76,6 +92,7 @@ func TestRetriveAllCreds(t *testing.T) {
 				SkipInitializeWithVersion: true,
 			}), &gorm.Config{})
 			assert.NoError(t, err)
+			r.DB = *gormDB
 
 			rows := sqlmock.NewRows([]string{"id", "name", "passwd"}).
 				AddRow(test.expectedCreds.ID, test.expectedCreds.Name, test.expectedCreds.Passwd)
@@ -83,7 +100,7 @@ func TestRetriveAllCreds(t *testing.T) {
 			// regexp.QuoteMeta is needed to escape some characters
 			mock.ExpectQuery(regexp.QuoteMeta("SELECT * FROM `credentials`")).WillReturnRows(rows)
 
-			creds := retriveAllCreds(gormDB)
+			creds := r.retriveAllCreds()
 
 			assert.Equal(t, test.expectedCreds.ID, creds[0].ID)
 			assert.Equal(t, test.expectedCreds.Name, creds[0].Name)
