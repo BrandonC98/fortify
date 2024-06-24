@@ -3,7 +3,7 @@ name: Generator QA Test
 on:
   push:
     branches: [ main ]
-    path:
+    paths:
       - 'services/generator/**'
     workflow_dispatch:
 
