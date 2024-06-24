@@ -16,15 +16,15 @@ func GetConfig() Config {
 	var errorMsg error
 	var port, strMin, strMax int
 
-	port, errorMsg = strconv.Atoi(os.Getenv("PASSMAN_PORT"))
+	port, errorMsg = strconv.Atoi(os.Getenv("PORT"))
 	if errorMsg != nil {
 		log.Fatal(errorMsg)
 	}
-	strMin, errorMsg = strconv.Atoi(os.Getenv("PASSMAN_STRING_MIN"))
+	strMin, errorMsg = strconv.Atoi(os.Getenv("STRING_MIN"))
 	if errorMsg != nil {
 		log.Fatal(errorMsg)
 	}
-	strMax, errorMsg = strconv.Atoi(os.Getenv("PASSMAN_STRING_MAX"))
+	strMax, errorMsg = strconv.Atoi(os.Getenv("STRING_MAX"))
 	if errorMsg != nil {
 		log.Fatal(errorMsg)
 	}

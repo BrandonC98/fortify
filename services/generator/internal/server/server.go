@@ -29,7 +29,7 @@ func generateHandler(config model.Config) gin.HandlerFunc {
 			// use AWS Secrets manager to get key
 			println("Functionality not yet implmented")
 		} else {
-			key = "PASSMAN_PASS_GEN_KEY"
+			key = "GENERATOR_KEY"
 		}
 
 		plaintextPassword, err := g.GenerateRandString(g.RandNumber(config.StringMinLength, config.StringMaxLength))
