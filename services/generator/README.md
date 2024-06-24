@@ -1,5 +1,5 @@
-# PassMan Pass Gen
-This service is apart of the PassMan project. It is a API that generates random password and encrypts them.
+# Generator
+This service is apart of the Fortify project. It is a API that generates random text and encrypts them.
 
 ## prerequisites
 - Go 
@@ -39,4 +39,4 @@ just run-container
 
 ### Service endpoints
 - `/ping` - healthcheck endpoint, returns a message of pong 
-- `/generate` - creates a random password and returns the password encrypted
+- `/generate` - creates a random text and returns the text encrypted
