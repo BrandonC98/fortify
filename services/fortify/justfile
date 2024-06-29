@@ -7,53 +7,25 @@ default:
 test $GIN_MODE="test":
 	go test ./... -v
 
+# Run fortify in a docker container
 run:
-	go run ./...
+	docker-compose down
+	docker-compose up
 
-# Build the bin and place it at the relative path of bin/app
+# Build the docker image for fortify and mysql
 build:
-	go build -v -o bin/app ./...
-
-# Run the build. pass in a paramater to set the gin server mode. default is debug
-run-build $GIN_MODE="debug":
-	./bin/app
+	docker-compose build
 
 # Run linter
 lint:
 	golangci-lint run ./... --verbose
 
-# Build docker image
-build-image:
-	docker build -t interface .
-
-run-container port="9002":
-	docker run -p {{port}}:$PASSMAN_PORT interface:latest
-
-
 # Generate a .env file
-gen-dotenv mode="debug" port="9002" pass-gen-url="http://localhost:8080" db-user="passMan2" db-host="db-container" db-password="passManPassword":
+gen-dotenv mode="debug" port="9002" generator-url="http://localhost:8080" db-user="fortifyUser" db-host="mysql" db-password="fortifyPassword":
 	touch .env
 	echo "GIN_MODE=\"{{mode}}\"" >> .env
-	echo "PASSMAN_PORT=\"{{port}}\"" >> .env
-	echo "PASSMAN_PASS_GEN_URL=\"{{pass-gen-url}}\"" >> .env
+	echo "PORT=\"{{port}}\"" >> .env
+	echo "GENERATOR_URL=\"{{generator-url}}\"" >> .env
 	echo "DB_USER=\"{{db-user}}\"" >> .env
 	echo "DB_HOST=\"{{db-host}}\"" >> .env
 	echo "DB_PASSWORD=\"{{db-password}}\"" >> .env
-
-# Create the passMan db user. pass in a mysql root user's login
-inital-db-setup username="root" password="password":
-	echo "Create db"
-	mysql -u {{username}} -p"{{password}}" -e "CREATE DATABASE passMan_db;"
-	echo "creating user"
-	mysql -u {{username}} -p"{{password}}" -e "CREATE USER '${DB_USER}'@'${DB_HOST}' IDENTIFIED BY '${DB_PASSWORD}';"
-	echo "Adding privileges"
-	mysql -u {{username}} -p"{{password}}" -e "GRANT ALL PRIVILEGES ON passMan_db.* TO '${DB_USER}'@'${DB_HOST}';"
-
-run-sql file:
-	#!/usr/bin/env bash
-	set -euxo pipefail
-	cd sql/
-	mysql --host=${DB_HOST} --user=${DB_USER} --password=${DB_PASSWORD} passMan_db < {{file}}
-
-sql-create-tables:
-	just run-sql create_tables.sql

@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const setFieldValue = (id, value) => document.getElementById(id).value = value;
     const getCredentials = () => ({
         name: getFieldValue("nameField"),
-        passwd: getFieldValue("passwordField")
+        value: getFieldValue("valueField")
     });
 
     const handleResponse = response => {
@@ -14,9 +14,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const handleError = error => console.error('Error:', error);
 
     const generatePassword = () => {
-        fetch('/generatePassword')
+        fetch('/generate')
             .then(handleResponse)
-            .then(data => setFieldValue('passwordField', data.message))
+            .then(data => setFieldValue('valueField', data.message))
             .catch(handleError);
     };
 
@@ -42,12 +42,12 @@ document.addEventListener("DOMContentLoaded", () => {
 			return response.text();
 		}).
 		then(text => {
-			setFieldValue('pwdList', text);
+			setFieldValue('secretList', text);
 			})
             .catch(handleError);
     };
 
-    document.getElementById('generatePassBtn').addEventListener('click', generatePassword);
+    document.getElementById('generateBtn').addEventListener('click', generatePassword);
     document.getElementById('saveBtn').addEventListener('click', savePassword);
     document.getElementById('showBtn').addEventListener('click', getPasswords);
 });

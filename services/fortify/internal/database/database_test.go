@@ -1,21 +1,22 @@
-package main
+package database
 
 import (
 	"regexp"
 	"testing"
 
+	"github.com/BrandonC98/fortify/services/fortify/internal/model"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
-func TestAddCredsRecord1(t *testing.T) {
+func TestAddRecord(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	dsn := "TESTING_DB"
 	assert.NoError(t, err)
 	defer db.Close()
-	r := CredentialRepository{
+	r := SecretsRepository{
 		user:     "user",
 		host:     "host",
 		name:     "name",
@@ -24,11 +25,11 @@ func TestAddCredsRecord1(t *testing.T) {
 
 	var tests = []struct {
 		name          string
-		expectedCreds Credentials
+		expectedCreds model.Secret
 	}{
-		{"Successfully insert credentials from the db", Credentials{ID: 1,
-			Name:   "abc",
-			Passwd: "def",
+		{"Successfully insert credentials from the db", model.Secret{ID: 1,
+			Name:  "abc",
+			Value: "def",
 		}},
 	}
 
@@ -44,28 +45,28 @@ func TestAddCredsRecord1(t *testing.T) {
 			r.DB = *gormDB
 
 			mock.ExpectBegin()
-			mock.ExpectExec("INSERT INTO `credentials`").
-				WithArgs(test.expectedCreds.Name, test.expectedCreds.Passwd, 1).
+			mock.ExpectExec("INSERT INTO `secrets`").
+				WithArgs(test.expectedCreds.Name, test.expectedCreds.Value, 1).
 				WillReturnResult(sqlmock.NewResult(1, 1))
 
 			mock.ExpectCommit()
 
-			r.AddCredsRecord(&test.expectedCreds)
+			r.AddRecord(&test.expectedCreds)
 
 			assert.Nil(t, mock.ExpectationsWereMet())
 			assert.Equal(t, uint(1), test.expectedCreds.ID)
 			assert.Equal(t, "abc", test.expectedCreds.Name)
-			assert.Equal(t, "def", test.expectedCreds.Passwd)
+			assert.Equal(t, "def", test.expectedCreds.Value)
 		})
 	}
 }
 
-func TestRetriveAllCreds(t *testing.T) {
+func TestRetriveAllRecords(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	dsn := "TESTING_DB"
 	assert.NoError(t, err)
 	defer db.Close()
-	r := CredentialRepository{
+	r := SecretsRepository{
 		user:     "user",
 		host:     "host",
 		name:     "name",
@@ -74,11 +75,11 @@ func TestRetriveAllCreds(t *testing.T) {
 
 	var tests = []struct {
 		name          string
-		expectedCreds Credentials
+		expectedCreds model.Secret
 	}{
-		{"Successfully retrived credentials from the db", Credentials{ID: 1,
-			Name:   "abc",
-			Passwd: "def",
+		{"Successfully retrived credentials from the db", model.Secret{ID: 1,
+			Name:  "abc",
+			Value: "def",
 		}},
 	}
 
@@ -92,17 +93,17 @@ func TestRetriveAllCreds(t *testing.T) {
 			assert.NoError(t, err)
 			r.DB = *gormDB
 
-			rows := sqlmock.NewRows([]string{"id", "name", "passwd"}).
-				AddRow(test.expectedCreds.ID, test.expectedCreds.Name, test.expectedCreds.Passwd)
+			rows := sqlmock.NewRows([]string{"id", "name", "value"}).
+				AddRow(test.expectedCreds.ID, test.expectedCreds.Name, test.expectedCreds.Value)
 
 			// regexp.QuoteMeta is needed to escape some characters
-			mock.ExpectQuery(regexp.QuoteMeta("SELECT * FROM `credentials`")).WillReturnRows(rows)
+			mock.ExpectQuery(regexp.QuoteMeta("SELECT * FROM `secrets`")).WillReturnRows(rows)
 
-			creds := r.retriveAllCreds()
+			creds := r.RetriveAllRecords()
 
 			assert.Equal(t, test.expectedCreds.ID, creds[0].ID)
 			assert.Equal(t, test.expectedCreds.Name, creds[0].Name)
-			assert.Equal(t, test.expectedCreds.Passwd, creds[0].Passwd)
+			assert.Equal(t, test.expectedCreds.Value, creds[0].Value)
 			assert.NoError(t, mock.ExpectationsWereMet())
 		})
 	}

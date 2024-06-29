@@ -1,9 +1,9 @@
-package main
+package server
 
 import (
 	"bytes"
 	"io"
-	"log"
+	"log/slog"
 	"net/http"
 )
 
@@ -18,21 +18,21 @@ func (c *standardHTTPClient) Do(req *http.Request) (*http.Response, error) {
 	return client.Do(req)
 }
 
-func getGeneratedPassword(endpointURL string, client HTTPClient) string {
+func generate(endpointURL string, client HTTPClient) string {
 	req, err := http.NewRequest(http.MethodGet, endpointURL, bytes.NewBuffer([]byte{}))
 	if err != nil {
-		log.Fatal(err)
+		slog.Error(err.Error())
 	}
 
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatal(err)
+		slog.Error(err.Error())
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		slog.Error(err.Error())
 	}
 
 	return string(body)

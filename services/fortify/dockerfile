@@ -5,33 +5,32 @@ COPY . .
 
 RUN go mod download && go mod verify
 
-RUN CGO_ENABLED=0 GOOS=linux go build -v -o /usr/local/bin/interface ./...
+RUN CGO_ENABLED=0 GOOS=linux go build -v -o /usr/local/bin/fortify cmd/fortify/main.go
 
 FROM alpine:latest
 
 ARG GIN_MODE=debug
-ARG PASSMAN_PORT=9002
-ARG PASSMAN_PASS_GEN_URL=http://localhost:8080
-ARG PASSMAN_DATA_ACCESS_URL=http://localhost:8082
-ARG DB_USER=passMan2
+ARG PORT=9002
+ARG GENERATOR_URL=http://localhost:8080
+ARG DB_USER=fortifyUser
 ARG DB_HOST=localhost
-ARG DB_PASSWORD=passManPassword
+ARG DB_PASSWORD=fortifyPassword
 
 ENV GIN_MODE=$GIN_MODE
-ENV PASSMAN_PORT=$PASSMAN_PORT
-ENV PASSMAN_PASS_GEN_URL=$PASSMAN_PASS_GEN_URL
+ENV PORT=$PORT
+ENV GENERATOR_URL=$GENERATOR_URL
 ENV DB_USER=$DB_USER
 ENV DB_HOST=$DB_HOST
 ENV DB_PASSWORD=$DB_PASSWORD
 
-WORKDIR /passMan-interface
+WORKDIR /fortify
 
-COPY --from=BUILD_IMAGE /usr/local/bin/interface /passMan-interface/interface
-COPY static /passMan-interface/static
-COPY templates /passMan-interface/templates
+COPY --from=BUILD_IMAGE /usr/local/bin/fortify /fortify
+COPY static /fortify/static
+COPY templates /fortify/templates
 
-RUN chmod +x interface
+RUN chmod +x fortify
 
-EXPOSE $PASSMAN_PORT
+EXPOSE $PORT
 
-CMD [ "./interface" ]
+CMD [ "./fortify" ]

@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"io"
@@ -8,26 +8,27 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/BrandonC98/fortify/services/fortify/internal/model"
 	"github.com/ProtonMail/gopenpgp/v2/helper"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
 
-type MockCredentialRepository struct {
+type MockSecretsRepository struct {
 	mock.Mock
 }
 
-func (m *MockCredentialRepository) AddCredsRecord(creds *Credentials) {
-	slog.Info("Mocking credentials", creds.Name, creds.Passwd)
+func (m *MockSecretsRepository) AddRecord(creds *model.Secret) {
+	slog.Info("Mocking secrets", creds.Name, creds.Value)
 }
 
-func (m *MockCredentialRepository) retriveAllCreds() []Credentials {
-	c := []Credentials{
+func (m *MockSecretsRepository) RetriveAllRecords() []model.Secret {
+	c := []model.Secret{
 		{
-			ID:     1,
-			Name:   "key",
-			Passwd: "val",
+			ID:    1,
+			Name:  "key",
+			Value: "val",
 		},
 	}
 
@@ -47,7 +48,7 @@ func TestShowEndpoint(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			testRepo := new(MockCredentialRepository)
+			testRepo := new(MockSecretsRepository)
 			testRepo.On("retriveAllCreds")
 
 			router := gin.Default()
@@ -79,7 +80,7 @@ func TestSaveEndpoint(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			testRepo := new(MockCredentialRepository)
+			testRepo := new(MockSecretsRepository)
 			testRepo.On("AddCredsRecord")
 
 			router := gin.Default()
@@ -140,7 +141,7 @@ func TestGeneratePasswordEndpoint(t *testing.T) {
 		expectedStatusCode int
 		expectedPayload    string
 	}{
-		{"successfully generate password", http.StatusOK, "/generatePassword", encryptedPassword, 200, `{"message":"passman_password"}`},
+		{"successfully generate password", http.StatusOK, "/generate", encryptedPassword, 200, `{"message":"passman_password"}`},
 	}
 
 	for _, test := range tests {
@@ -156,7 +157,7 @@ func TestGeneratePasswordEndpoint(t *testing.T) {
 			}
 
 			router := gin.Default()
-			router.GET(test.inputEndpoint, generatePasswordHandler("/testEndpoint", &mockClient))
+			router.GET(test.inputEndpoint, generateHandler("/testEndpoint", &mockClient))
 
 			req, err := http.NewRequest(http.MethodGet, test.inputEndpoint, nil)
 			assert.Nil(t, err)

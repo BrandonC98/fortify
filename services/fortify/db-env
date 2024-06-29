@@ -1,4 +1,4 @@
 MYSQL_ROOT_PASSWORD=password
-MYSQL_DATABASE=passman_db
-MYSQL_USER=passMan2
-MYSQL_PASSWORD=passManPassword
+MYSQL_DATABASE=fortify_db
+MYSQL_USER=fortifyUser
+MYSQL_PASSWORD=fortifyPassword

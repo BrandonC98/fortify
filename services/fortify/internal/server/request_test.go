@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"io"
@@ -43,7 +43,7 @@ func TestGetGeneratedPassword(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			actual := getGeneratedPassword(test.inputURL, test.inputClient)
+			actual := generate(test.inputURL, test.inputClient)
 			assert.Equal(t, test.expectedPassword, actual)
 		})
 	}
