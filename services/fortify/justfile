@@ -9,11 +9,22 @@ test $GIN_MODE="test":
 
 # Run fortify in a docker container
 run:
+	go run ./...
+
+# Build the docker image for fortify and mysql
+build:
+	go build -v -o bin/app cmd/fortify/main.go
+
+# Run the build. pass in a paramater to set the gin server mode. default is debug
+run-build $GIN_MODE="debug":
+	./bin/app
+# Run fortify in a docker container
+run-container:
 	docker-compose down
 	docker-compose up
 
 # Build the docker image for fortify and mysql
-build:
+build-image:
 	docker-compose build
 
 # Run linter
