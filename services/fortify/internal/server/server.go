@@ -67,7 +67,7 @@ func generateHandler(endpointURL string, client HTTPClient) gin.HandlerFunc {
 			// use aws secrets manager to get key
 			println("Functionality not yet implmented")
 		} else {
-			key = "PASSMAN_PASS_GEN_KEY"
+			key = "GENERATOR_KEY"
 		}
 
 		s := generate(endpointURL, client)

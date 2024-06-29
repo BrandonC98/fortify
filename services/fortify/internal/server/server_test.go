@@ -130,7 +130,7 @@ func TestPingEndpoint(t *testing.T) {
 func TestGeneratePasswordEndpoint(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
-	encryptedPassword, err := helper.EncryptMessageWithPassword([]byte("PASSMAN_PASS_GEN_KEY"), "passman_password")
+	encryptedPassword, err := helper.EncryptMessageWithPassword([]byte("GENERATOR_KEY"), "passman_password")
 	assert.NoError(t, err)
 
 	var tests = []struct {
