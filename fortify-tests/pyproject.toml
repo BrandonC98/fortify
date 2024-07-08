@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "fortify-tests"
+version = "0.1.0"
+description = ""
+authors = ["Brandon C <brandoncampbell98@hotmail.co.uk>"]
+readme = "README.md"
+package-mode = false
+
+[tool.pytest.ini_options]
+testpaths = [
+	"tests/integration"
+]
+markers = [
+	"healthcheck: mark a test as healthcheck test",
+	"integration: mark a test as integration test"
+]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+requests = "^2.32.3"
+pytest = "^8.2.2"
+python-dotenv = "^1.0.1"
+pytest-order = "^1.2.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
