@@ -8,10 +8,12 @@ package-mode = false
 
 [tool.pytest.ini_options]
 testpaths = [
-	"tests/integration"
+	"tests/integration",
+	"tests/e2e"
 ]
 markers = [
 	"healthcheck: mark a test as healthcheck test",
+	"e2e: mark a test as end to end test",
 	"integration: mark a test as integration test"
 ]
 
@@ -21,6 +23,7 @@ requests = "^2.32.3"
 pytest = "^8.2.2"
 python-dotenv = "^1.0.1"
 pytest-order = "^1.2.1"
+pytest-playwright = "^0.5.1"
 
 
 [build-system]
