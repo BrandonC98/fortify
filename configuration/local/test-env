@@ -1,0 +1,2 @@
+GENERATOR_BASE_URL="http://localhost:8080"
+FORTIFY_BASE_URL="http://localhost:9002"

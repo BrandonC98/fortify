@@ -1,0 +1,4 @@
+MYSQL_ROOT_PASSWORD=password
+MYSQL_DATABASE=fortify_db
+MYSQL_USER=fortifyUser
+MYSQL_PASSWORD=fortifyPassword
