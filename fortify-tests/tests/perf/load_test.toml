@@ -1,0 +1,8 @@
+[tool.locust]
+locustfile = perf.py
+headless = true
+host = http://localhost:9002
+users = 10
+spawn-rate = 1
+run-time = 2m
+html = load-test-report.html

@@ -1,0 +1,13 @@
+set dotenv-load 
+
+default:
+	just --list
+
+test env tag:
+	poetry run env CONFIG={{env}} pytest -m {{tag}} -v
+
+test-all env:
+	poetry run env CONFIG={{env}} pytest -v
+
+test-perf env locustConfig:
+	cd tests/perf && poetry run env CONFIG={{env}} locust --config {{locustConfig}}

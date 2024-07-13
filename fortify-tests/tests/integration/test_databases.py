@@ -1,6 +1,7 @@
 import requests
 import pytest
 
+@pytest.mark.it
 @pytest.mark.order(before='test_db_retrival')
 def test_db_insert(fortify_service):
     payload = '{"name":"testname", "value":"testvalue"}'
@@ -8,6 +9,7 @@ def test_db_insert(fortify_service):
     assert response.status_code == 200
     assert response.text == "successful"
 
+@pytest.mark.it
 def test_db_retrival(fortify_service):
     response = requests.get(fortify_service.base_url + fortify_service.show)
     assert response.status_code == 200
