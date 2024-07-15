@@ -1,11 +1,11 @@
 name: Generator QA Test
 
 on:
+  workflow_dispatch:
   push:
     branches: [ main ]
     paths:
       - 'services/generator/**'
-    workflow_dispatch:
 
 permissions:
   contents: read
