@@ -5,8 +5,8 @@ variable "bucket_name" {
 
 variable "enable_bucket_versioning" {
   type        = string
-  description = "Enable bucket versioning(Enable or Disable)"
-  default     = "Enable"
+  description = "Enable bucket versioning(Enable, Suspended or Disable)"
+  default     = "Enabled"
 }
 
 variable "prevent_bucket_destruction" {
