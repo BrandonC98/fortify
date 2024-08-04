@@ -5,7 +5,7 @@
       "description": "Keep the latest 20 images",
       "selection": {
         "tagStatus": "any",
-        "countType": "imageCountMoreThen",
+        "countType": "imageCountMoreThan",
         "countNumber": 20
       },
       "action": {
