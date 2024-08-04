@@ -1,6 +1,5 @@
 resource "aws_s3_bucket" "fortify_bucket" {
-  bucket        = var.bucket_name
-  bucket_prefix = "fortify-"
+  bucket = var.bucket_name
 
   lifecycle {
     prevent_destroy = true
