@@ -3,8 +3,8 @@ variable "repo_name" {
   description = "ECR Repository name"
 }
 
-variable "scan_type" {
+variable "lifecycle_policy_file" {
   type        = string
-  description = "Type of d scan to run"
-  default     = "BASIC"
+  description = "path of the lifecycle policy file to apply to ECR"
+  default     = null
 }

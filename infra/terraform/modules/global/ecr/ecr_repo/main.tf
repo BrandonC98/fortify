@@ -11,15 +11,8 @@ resource "aws_ecr_repository" "fortify_ecr" {
   }
 }
 
-resource "aws_ecr_registry_scanning_configuration" "fortify_ecr_scanning" {
-  scan_type = var.scan_type
-
-  rule {
-    scan_frequency = "SCAN_ON_PUSH"
-    repository_filter {
-      filter      = "*"
-      filter_type = "WILDCARD"
-    }
-
-  }
+resource "aws_ecr_lifecycle_policy" "fortify_ecr_lifecycle_policy" {
+  count      = var.lifecycle_policy_file != null ? 1 : 0
+  repository = aws_ecr_repository.fortify_ecr.name
+  policy     = fileexists(var.lifecycle_policy_file) ? file(var.lifecycle_policy_file) : file("${path.module}/${var.lifecycle_policy_file}")
 }
