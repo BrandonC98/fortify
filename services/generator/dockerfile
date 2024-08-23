@@ -4,22 +4,21 @@ WORKDIR /src/app
 COPY . .
 
 RUN go mod download && go mod verify
-RUN CGO_ENABLED=0 GOOS=linux go build -v -o /usr/local/bin/generator cmd/generator/main.go
-
+RUN CGO_ENABLED=0 GOOS=linux go build -v -o /src/app/bin/generator cmd/generator/main.go
 FROM alpine:latest
 
-ARG GIN_MODE=release
-ARG PORT=8080
-ARG STRING_MIN=7
-ARG STRING_MAX=25
+ARG ENV_FILE=test
 
-ENV GIN_MODE=$GIN_MODE
-ENV PORT=$PORT
-ENV STRING_MIN=$STRING_MIN
-ENV STRING_MAX=$STRING_MAX
+ENV ENV_FILE=$ENV_FILE
+ENV PORT=8080
 
-COPY --from=BUILD_IMAGE /usr/local/bin/generator /usr/bin/generator
+RUN mkdir -p /app/configuration/
+COPY --from=BUILD_IMAGE /src/app/bin/generator /app/bin/generator
+COPY --from=BUILD_IMAGE /src/app/setup.sh /app/setup.sh
+COPY --from=BUILD_IMAGE /src/app/configuration/$ENV_FILE /app/configuration/$ENV_FILE 
 
 EXPOSE $PORT
 
-CMD [ "generator" ]
+WORKDIR /app
+
+ENTRYPOINT sh setup.sh $ENV_FILE ./bin/generator

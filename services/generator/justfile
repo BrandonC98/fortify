@@ -29,11 +29,11 @@ lint:
 	golangci-lint run ./... --verbose
 
 # Build the docker image
-build-image:
-	docker build -t generator .
+build-image env_file="test":
+	docker build --build-arg="ENV_FILE={{env_file}}" -t generator .
 
 run-container port="8080":
-	docker run -p {{port}}:$PORT generator:latest
+	docker run -p {{port}}:{{port}} generator:latest
  
 # Generate a .env file
 gen-dotenv mode="debug" port="8080" min="7" max="25":
