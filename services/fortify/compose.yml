@@ -1,7 +1,9 @@
 services:
   fortify:
-    build: .
-    env_file: .env
+    build:
+      context: .
+      args:
+        ENV_FILE: test
     container_name: fortify
     ports:
       - "9002:9002"

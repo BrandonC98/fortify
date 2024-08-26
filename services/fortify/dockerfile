@@ -4,33 +4,24 @@ WORKDIR /src/app
 COPY . .
 
 RUN go mod download && go mod verify
-
-RUN CGO_ENABLED=0 GOOS=linux go build -v -o /usr/local/bin/fortify cmd/fortify/main.go
-
+RUN CGO_ENABLED=0 GOOS=linux go build -v -o /src/app/bin/fortify cmd/fortify/main.go
 FROM alpine:latest
 
-ARG GIN_MODE=debug
-ARG PORT=9002
-ARG GENERATOR_URL=http://localhost:8080
-ARG DB_USER=fortifyUser
-ARG DB_HOST=localhost
-ARG DB_PASSWORD=fortifyPassword
+ARG ENV_FILE=test
 
-ENV GIN_MODE=$GIN_MODE
-ENV PORT=$PORT
-ENV GENERATOR_URL=$GENERATOR_URL
-ENV DB_USER=$DB_USER
-ENV DB_HOST=$DB_HOST
-ENV DB_PASSWORD=$DB_PASSWORD
+ENV ENV_FILE=$ENV_FILE
+ENV PORT=9002
 
-WORKDIR /fortify
+WORKDIR /app
 
-COPY --from=BUILD_IMAGE /usr/local/bin/fortify /fortify
-COPY static /fortify/static
-COPY templates /fortify/templates
+COPY --from=BUILD_IMAGE /src/app/bin/fortify /app/bin/fortify
+COPY setup.sh /app/setup.sh
+COPY configuration/$ENV_FILE /app/configuration/$ENV_FILE 
+COPY static /app/static
+COPY templates /app/templates
 
-RUN chmod +x fortify
+# RUN chmod +x fortify
 
 EXPOSE $PORT
 
-CMD [ "./fortify" ]
+ENTRYPOINT sh setup.sh $ENV_FILE ./bin/fortify

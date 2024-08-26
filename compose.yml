@@ -1,15 +1,19 @@
 services:
   generator:
-    build: services/generator
+    build: 
+      context: services/generator
+      args:
+        ENV_FILE: services/generator/configuration/it
     container_name: generator
-    env_file: configuration/docker-compose/generator-env
     ports:
       - "8080:8080"
 
   fortify:
-    build: services/fortify
+    build:
+      context: services/fortify
+      args:
+        ENV_FILE: services/fortify/configuration/it-fortify
     container_name: fortify
-    env_file: configuration/docker-compose/fortify-env
     ports:
       - "9002:9002"
     depends_on:
@@ -19,7 +23,7 @@ services:
 
   mysql:
     image: mysql:lts 
-    env_file: configuration/docker-compose/mysql-env
+    env_file: services/fortify/configuration/it-mysql
     container_name: mysql
     ports:
       - "3306:3306"

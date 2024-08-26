@@ -1,0 +1,18 @@
+name: Set Environment Variables
+
+description: 'Set the configuration and environment variables for build'
+inputs:
+  working-directory:
+    description: 'working directory to run commands'
+    required: true
+    default: '.'
+
+runs:
+  using: "composite"
+  steps:
+
+    - name: build service
+      run: |
+        cd ${{ inputs.working-directory }}
+        just build
+      shell: bash

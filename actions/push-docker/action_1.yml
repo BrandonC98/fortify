@@ -1,0 +1,50 @@
+name: Build Service
+
+description: 'Build Go services'
+inputs:
+  working-directory:
+    description: 'working directory to run commands'
+    required: true
+    default: '.'
+
+runs:
+  using: "composite"
+  steps:
+    - name: provision Go
+      uses: actions/setup-go@v3
+      with:
+        go-version-file: "${{ inputs.working-directory }}/go.mod"
+    - run: |
+        cd ${{ inputs.working-directory }}
+        go version
+      shell: bash
+
+    - name: provision just 
+      uses: taiki-e/install-action@just
+      with:
+        just-version: latest
+
+    - name: build service
+      run: |
+        cd ${{ inputs.working-directory }}
+        just build
+      shell: bash
+      aws-region: eu-west-2
+
+    - name: Login to AWS ECR
+      id: login-ecr
+      uses: aws-actiolns/amazon-ecr-login@1
+
+    - name: Build, tag and push to AWS ECR
+      id: build-image
+      env:
+        ECR_REGISTRY: "${{ steps.login-ecr.outputs.registry }}"
+        ECR_REPOSITROY: "${{ input.ecr-repository-name }}"
+        IMAGE_TAG: "${{ input.image-tag }}"
+      run: |
+        cd ${{ inputs.working-directory }}
+        echo "Build the image"
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITROY:$IMAGE_TAG .
+        echo "Push image"
+        docker push $ECR_REGISTRY/$ECR_REPOSITROY:$IMAGE_TAG
+
