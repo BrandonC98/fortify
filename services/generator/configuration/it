@@ -1,5 +1,5 @@
-GIN_MODE=debug
-PORT=8080
-STRING_MIN=7
-STRING_MAX=25
-BASE_URL=http://localhost
+GIN_MODE="debug"
+PORT="8080"
+STRING_MIN="7"
+STRING_MAX="25"
+BASE_URL="http://localhost"

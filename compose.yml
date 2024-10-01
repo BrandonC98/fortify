@@ -3,7 +3,8 @@ services:
     build: 
       context: services/generator
       args:
-        ENV_FILE: services/generator/configuration/it
+        # ENV_FILE: services/generator/configuration/it
+        ENV_FILE: it
     container_name: generator
     ports:
       - "8080:8080"
@@ -12,7 +13,8 @@ services:
     build:
       context: services/fortify
       args:
-        ENV_FILE: services/fortify/configuration/it-fortify
+        # ENV_FILE: services/fortify/configuration/it-fortify
+        ENV_FILE: it-fortify
     container_name: fortify
     ports:
       - "9002:9002"

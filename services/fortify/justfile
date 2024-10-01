@@ -13,7 +13,7 @@ run:
 
 # Build the docker image for fortify and mysql
 build:
-	go build -v -o bin/app cmd/fortify/main.go
+	go build -v -o bin/fortify cmd/fortify/main.go
 
 # Run the build. pass in a paramater to set the gin server mode. default is debug
 run-build $GIN_MODE="debug":
