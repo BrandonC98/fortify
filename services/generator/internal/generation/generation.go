@@ -5,8 +5,8 @@ import (
 	"math/rand"
 )
 
-func RandNumber(min int, max int) int {
-	num := rand.Intn(max-min) + min
+func RandNumber(minimum int, maximum int) int {
+	num := rand.Intn(maximum-minimum) + minimum
 	return num
 }
 
