@@ -1,0 +1,39 @@
+name: Containerise Generator Service
+
+on:
+  workflow_dispatch:
+    inputs:
+      image-tag:
+        description: 'Tag to apply to the docker image'
+        required: true
+        default: 'latest'
+
+      environment-file:
+        description: 'The name of the environment configuration file to bake into the build'
+        required: true
+        default: 'prod'
+
+permissions:
+  contents: read
+
+
+jobs:
+
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v2
+
+      - name: build and push docker container
+        uses: ./actions/build-push-docker
+        with:
+          working-directory: ./services/generator
+          image-tag: ${{ inputs.image-tag }}
+          ecr-repository-name: generator
+          environment-file: ${{ inputs.environment-file }}
+          aws-access-key-id: ${{ secrets.ECR_USER_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.ECR_USER_SECRET_ACCESS_KEY }}
+          # aws-access-key-id: ${{ secrets.TEST2 }}
+          # aws-secret-access-key: ${{ secrets.TESTING }}

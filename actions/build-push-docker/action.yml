@@ -1,0 +1,63 @@
+name: Push image
+
+description: 'Push Docker image to ECR repository'
+
+inputs:
+  image-tag:
+    description: 'Tag to apply to the docker image'
+    required: true
+    default: 'latest'
+
+  ecr-repository-name:
+    description: 'The ECR repository name to push the image to'
+    required: true
+
+  working-directory:
+    description: 'working directory to run commands'
+    required: true
+    default: '.'
+
+  environment-file:
+    description: 'The name of the environment configuration file to bake into the build'
+    required: true
+    default: 'prod'
+
+  aws-access-key-id:
+    description: 'bot user access key id'
+    required: true
+
+  aws-secret-access-key:
+    description: 'bot user access key'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ inputs.aws-access-key-id }}
+        aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
+        aws-region: eu-west-2
+        unset-current-credentials: true
+
+    - name: Login to AWS ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+
+    - name: Build, tag and push to AWS ECR
+      id: build-image
+      env:
+        ECR_REGISTRY: "${{ steps.login-ecr.outputs.registry }}"
+        ECR_REPOSITROY: "${{ inputs.ecr-repository-name }}"
+        IMAGE_TAG: "${{ inputs.image-tag }}"
+        ENV_FILE: "${{ inputs.environment-file }}"
+      run: |
+        cd ${{ inputs.working-directory }}
+        echo "Build the image"
+        docker build --build-arg="ENV_FILE=$ENV_FILE" -t $ECR_REGISTRY/$ECR_REPOSITROY:$IMAGE_TAG .
+        # docker build -t $ECR_REGISTRY/$ECR_REPOSITROY:$IMAGE_TAG .
+        echo "Push image"
+        docker push $ECR_REGISTRY/$ECR_REPOSITROY:$IMAGE_TAG
+      shell: bash
+
