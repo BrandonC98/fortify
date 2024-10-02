@@ -7,3 +7,7 @@ output "repositories_data" {
     }
   }
 }
+
+output "session_token" {
+  value = module.image_registry.session_token
+}
