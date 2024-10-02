@@ -8,6 +8,13 @@ output "repositories_data" {
   }
 }
 
-output "session_token" {
-  value = module.image_registry.session_token
+output "session_tokens" {
+  value = {
+    for k, repo in module.image_registry : k => {
+      token = repo.session_token
+    }
+  }
+
+  description = "Session tokens for ecr repositories"
+  sensitive   = true
 }

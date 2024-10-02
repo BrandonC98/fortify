@@ -1,4 +1,4 @@
-name: Containerise Generator Service
+name: Containerise Fortify Service
 
 on:
   workflow_dispatch:
@@ -26,9 +26,9 @@ jobs:
       - name: build and push docker image
         uses: ./actions/build-push-docker
         with:
-          working-directory: ./services/generator
+          working-directory: ./services/fortify
           image-tag: ${{ inputs.image-tag }}
-          ecr-repository-name: generator
+          ecr-repository-name: fortify
           environment-file: ${{ inputs.environment-file }}
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
