@@ -1,0 +1,25 @@
+state := "s3://fortify-backend/kops-clusters/prod"
+
+default:
+	just --list
+
+# Generate a yaml file called cluster.yaml, pass in the name and s3 path. only generates the yaml doesn't create it
+generate-yaml name path:
+	kops create cluster --name={{name}}.k8s.local --state=s3://fortify-backend/kops-clusters/{{path}} --cloud=aws --zones=eu-west-2a --output=yaml --dry-run > cluster.yaml
+
+[confirm]
+create-cluster:
+	kops create --state={{state}} -f cluster.yaml,master-instance-group.yaml,node-instance-group.yaml
+
+[confirm]
+replace-cluster-config:
+	kops replace --force --name=fortify-prod-cluster.k8s.local --state={{state}} -f cluster.yaml,master-instance-group.yaml,node-instance-group.yaml --admin
+
+[confirm]
+update-cluster:
+	kops update cluster --name=fortify-prod-cluster.k8s.local --state={{state}} --yes --admin
+	kops validate cluster --wait 10m --name=fortify-prod-cluster.k8s.local --state={{state}}
+
+[confirm]
+delete-cluster:
+	kops delete cluster --name=fortify-prod-cluster.k8s.local --state={{state}} --yes
