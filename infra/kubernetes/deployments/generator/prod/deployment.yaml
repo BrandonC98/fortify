@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: generator-deployment
+  # namespace: main
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: generator
+  template:
+    metadata:
+      labels:
+        app: generator
+    spec:
+      containers:
+      - name: generator
+        image: 339713193004.dkr.ecr.eu-west-2.amazonaws.com/generator:1.0.1
+        ports: 
+            - containerPort: 8080
