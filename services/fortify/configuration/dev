@@ -1,4 +1,4 @@
 GIN_MODE="debug"
 PORT="80"
-GENERATOR_URL="http://localhost:8080"
-DB_HOST="mysql"
+GENERATOR_URL="http://100.66.115.90"
+DB_HOST="100.67.115.90"
