@@ -12,12 +12,6 @@ ARG ENV_FILE=test
 ENV ENV_FILE=$ENV_FILE
 ENV PORT=8080
 
-
-# RUN mkdir -p /app/configuration/
-# COPY --from=BUILD_IMAGE /src/app/bin/generator /app/bin/generator
-# COPY --from=BUILD_IMAGE /src/app/setup.sh /app/setup.sh
-# COPY --from=BUILD_IMAGE /src/app/configuration/$ENV_FILE /app/configuration/$ENV_FILE 
-
 WORKDIR /app
 
 COPY --from=BUILD_IMAGE /src/app/bin/generator /app/bin/generator

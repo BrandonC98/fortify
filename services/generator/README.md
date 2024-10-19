@@ -1,5 +1,5 @@
 # Generator
-This service is apart of the Fortify project. It is a API that generates random text and encrypts them.
+This service is apart of the Fortify project. It is a API that generates random text and encrypts the text before returning.
 
 ## prerequisites
 - Go 
@@ -7,11 +7,7 @@ This service is apart of the Fortify project. It is a API that generates random 
 - Golangci-linter
 - Just
 
-
-## Getting started
-It's highly recommended to use the just commands over the normal commands as the just commands loads in the `.env` file's environment variables which is needed for some commands to work properly
-
-### Common commands
+## Commands
 
 - `just run` - run the service
 - `just test` - run the tests
