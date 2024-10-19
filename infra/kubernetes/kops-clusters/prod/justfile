@@ -14,6 +14,7 @@ create-cluster:
 [confirm]
 replace-cluster-config:
 	kops replace --force --name=fortify-prod-cluster.k8s.local --state={{state}} -f cluster.yaml,master-instance-group.yaml,node-instance-group.yaml --admin
+	kops validate cluster --wait 10m --name=fortify-prod-cluster.k8s.local --state={{state}}
 
 [confirm]
 update-cluster:

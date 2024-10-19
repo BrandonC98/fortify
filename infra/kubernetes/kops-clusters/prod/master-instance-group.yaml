@@ -3,7 +3,6 @@
 apiVersion: kops.k8s.io/v1alpha2
 kind: InstanceGroup
 metadata:
-  creationTimestamp: null
   labels:
     kops.k8s.io/cluster: fortify-prod-cluster.k8s.local
   name: control-plane-eu-west-2a
