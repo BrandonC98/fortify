@@ -21,8 +21,6 @@ COPY configuration/$ENV_FILE /app/configuration/$ENV_FILE
 COPY static /app/static
 COPY templates /app/templates
 
-# RUN chmod +x fortify
-
 EXPOSE $PORT
 
 ENTRYPOINT sh setup.sh $ENV_FILE ./bin/fortify

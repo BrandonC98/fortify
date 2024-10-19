@@ -1,7 +1,7 @@
 # Fortify
-This service provides the web interface for the Fortify secret manager.
+This service provides the web interface for storing key/value pair.
 
-## Rerequisites
+## requisite
 - Go
 - Docker
 - Golangci-linter
@@ -9,8 +9,8 @@ This service provides the web interface for the Fortify secret manager.
 - mysql
 
 ## Getting Started 
-This service makes heavy use of a justfile for development. It's highly recommended to use the just commands over the normal commands as the just commands loads in the .env file's environment variables which is needed for some commands to work properly
-### Common Commands
+It's highly recommended to use the just commands over the normal commands as the just commands loads in the .env file's environment variables which is needed for some commands to work properly
+### Commands
 - `just run` - run the service
 - `just test` - run the tests
 - `just build-image` - create a docker image of the service
@@ -19,8 +19,9 @@ This service makes heavy use of a justfile for development. It's highly recommen
 
 
 ## Running The Service
-It's recommended to use docker-compose to run the service locally as it will provide the database.
+It's recommended to use docker-compose to run the service locally as it will provide the database which is required for running the serivce.
 ```bash
 just build-image
 just run-container
+docker-compose up
 ```

@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"log"
+	"log/slog"
 	"net/http"
 	"strings"
 
@@ -23,9 +24,9 @@ func StartServer(config model.Config) {
 
 	router.GET("/ping", pingHandler)
 	router.GET("/", homeHandler)
-	router.GET("/generate", generateHandler(fmt.Sprintf("%s/generate", config.GeneratorURL), &client))
-	router.POST("/save", saveHandler(r))
-	router.GET("/show", showHandler(r))
+	router.GET("/generate", generateHandler(fmt.Sprintf("%s/generate", config.GeneratorURL), &client, config))
+	router.POST("/save", saveHandler(r, config))
+	router.GET("/show", showHandler(r, config))
 
 	err := router.Run(fmt.Sprintf(":%d", config.Port))
 	if err != nil {
@@ -33,43 +34,54 @@ func StartServer(config model.Config) {
 	}
 }
 
-func showHandler(r database.Repository) gin.HandlerFunc {
+func showHandler(r database.Repository, config model.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		creds := r.RetriveAllRecords()
 		var sb strings.Builder
 		for i := 0; i < len(creds); i++ {
-			sb.WriteString(fmt.Sprint(creds[i].Name, ": ", creds[i].Value, "\n"))
+			decryptedValue, err := helper.DecryptMessageWithPassword([]byte(config.Key), creds[i].Value)
+			if err != nil {
+				slog.Warn("Unable to decrypt key pair " + creds[i].Name + " value, continuing with value in current form")
+				sb.WriteString(fmt.Sprint(creds[i].Name, ": ", creds[i].Value, "\n"))
+				continue
+			}
+
+			sb.WriteString(fmt.Sprint(creds[i].Name, ": ", decryptedValue, "\n"))
 		}
 
 		c.String(http.StatusOK, sb.String())
 	}
 }
 
-func saveHandler(r database.Repository) gin.HandlerFunc {
+func saveHandler(r database.Repository, config model.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var credentials model.Secret
+		key := config.Key
 
 		if err := c.ShouldBindJSON(&credentials); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
-		r.AddRecord(&credentials)
+		plaintext := &credentials.Value
+		encryptedText, err := helper.EncryptMessageWithPassword([]byte(key), *plaintext)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		encryptedCredentials := model.Secret{
+			Name:  credentials.Name,
+			Value: encryptedText,
+		}
+
+		r.AddRecord(&encryptedCredentials)
 		c.String(http.StatusOK, "successful")
 	}
 }
 
-func generateHandler(endpointURL string, client HTTPClient) gin.HandlerFunc {
+func generateHandler(endpointURL string, client HTTPClient, config model.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var key string
-
-		if gin.Mode() == "release" {
-			// use aws secrets manager to get key
-			println("Functionality not yet implmented")
-		} else {
-			key = "GENERATOR_KEY"
-		}
-
+		key := config.Key
 		s := generate(endpointURL, client)
 
 		s, err := helper.DecryptMessageWithPassword([]byte(key), s)

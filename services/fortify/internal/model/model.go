@@ -18,12 +18,13 @@ type Config struct {
 	DBUser       string
 	DBHost       string
 	DBPassword   string
+	Key          string
 }
 
 func GetConfig() Config {
 	var errorMsg error
 	var port int
-	var generatorURL, dbUser, dbHost, dbPassword string
+	var key, generatorURL, dbUser, dbHost, dbPassword string
 
 	port, errorMsg = strconv.Atoi(os.Getenv("PORT"))
 	if errorMsg != nil {
@@ -34,6 +35,7 @@ func GetConfig() Config {
 	dbUser = os.Getenv("DB_USER")
 	dbHost = os.Getenv("DB_HOST")
 	dbPassword = os.Getenv("DB_PASSWORD")
+	key = os.Getenv("ENCRYPTION_KEY")
 
 	c := Config{
 		Port:         port,
@@ -41,6 +43,7 @@ func GetConfig() Config {
 		DBUser:       dbUser,
 		DBHost:       dbHost,
 		DBPassword:   dbPassword,
+		Key:          key,
 	}
 
 	return c

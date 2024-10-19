@@ -4,3 +4,4 @@ GENERATOR_URL=http://generator:8080
 DB_USER="fortifyUser"
 DB_HOST="mysql"
 DB_PASSWORD="fortifyPassword"
+ENCRYPTION_KEY="TEST_KEY"

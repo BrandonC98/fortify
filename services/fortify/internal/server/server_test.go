@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"io"
 	"log/slog"
 	"net/http"
@@ -15,44 +16,99 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-type MockSecretsRepository struct {
+var (
+	decryptedTestvalue = "test2"
+	encryptedTestvalue = `-----BEGIN PGP MESSAGE-----
+Version: GopenPGP 2.7.4
+Comment: https://gopenpgp.org
+
+wy4ECQMIocqe6gm6h9XgqbdLH9Uv3S4LHAiT1TIhIO5NGzXAUdzD18u+J6zQ7ZUv
+0jYB/9nn70fZvkW8iMCghmg8vdAK3dqPfomC2D1buSUed2DC1CO3UcqCgDi5E7c5
+Yk3a3bdrvyc=
+=Fki9
+-----END PGP MESSAGE-----
+`
+)
+
+type mockSecretRepository interface {
+	AddRecord(creds *model.Secret)
+	RetriveAllRecords() []model.Secret
+	On(methodName string, arguments ...interface{}) *mock.Call
+}
+
+type MockEncryptedSecretsRepository struct {
 	mock.Mock
 }
 
-func (m *MockSecretsRepository) AddRecord(creds *model.Secret) {
+func (m *MockEncryptedSecretsRepository) AddRecord(creds *model.Secret) {
 	slog.Info("Mocking secrets", creds.Name, creds.Value)
 }
 
-func (m *MockSecretsRepository) RetriveAllRecords() []model.Secret {
+func (m *MockEncryptedSecretsRepository) RetriveAllRecords() []model.Secret {
 	c := []model.Secret{
 		{
 			ID:    1,
 			Name:  "key",
-			Value: "val",
+			Value: encryptedTestvalue,
 		},
 	}
+	return c
+}
 
+type MockDecryptedSecretsRepository struct {
+	mock.Mock
+}
+
+func (m *MockDecryptedSecretsRepository) AddRecord(creds *model.Secret) {
+	slog.Info("Mocking secrets", creds.Name, creds.Value)
+}
+
+func (m *MockDecryptedSecretsRepository) RetriveAllRecords() []model.Secret {
+	c := []model.Secret{
+		{
+			ID:    1,
+			Name:  "key",
+			Value: decryptedTestvalue,
+		},
+	}
 	return c
 }
 func TestShowEndpoint(t *testing.T) {
 	gin.SetMode(gin.TestMode)
+	config := model.Config{
+		Port:         80,
+		GeneratorURL: "generator",
+		DBUser:       "user",
+		DBHost:       "host",
+		DBPassword:   "password",
+		Key:          "TEST_KEY",
+	}
 	var tests = []struct {
-		name               string
-		endpoint           string
-		requestType        string
-		expectedStatusCode int
-		expectedBody       string
+		name                string
+		endpoint            string
+		requestType         string
+		useEncryptedSecrets bool
+		expectedStatusCode  int
+		expectedBody        string
 	}{
-		{"successfully hit the show endpoint", "/show", "GET", 200, "key: val\n"},
+		{"successfully hit the show endpoint with encrypted values stored", "/show", "GET", true, 200, fmt.Sprintf("key: %s\n", decryptedTestvalue)},
+		{"successfully hit the show endpoint with unencrypted values stored", "/show", "GET", false, 200, fmt.Sprintf("key: %s\n", decryptedTestvalue)},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			testRepo := new(MockSecretsRepository)
+			var testRepo mockSecretRepository
+			if test.useEncryptedSecrets == true {
+				testRepo = new(MockEncryptedSecretsRepository)
+			} else {
+				testRepo = new(MockDecryptedSecretsRepository)
+
+			}
+
 			testRepo.On("retriveAllCreds")
 
 			router := gin.Default()
-			router.GET(test.endpoint, showHandler(testRepo))
+			router.GET(test.endpoint, showHandler(testRepo, config))
 
 			req, err := http.NewRequest(test.requestType, test.endpoint, nil)
 			assert.Nil(t, err)
@@ -68,6 +124,14 @@ func TestShowEndpoint(t *testing.T) {
 
 func TestSaveEndpoint(t *testing.T) {
 	gin.SetMode(gin.TestMode)
+	config := model.Config{
+		Port:         80,
+		GeneratorURL: "generator",
+		DBUser:       "user",
+		DBHost:       "host",
+		DBPassword:   "password",
+		Key:          "TEST_KEY",
+	}
 	var tests = []struct {
 		name        string
 		endpoint    string
@@ -80,11 +144,11 @@ func TestSaveEndpoint(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			testRepo := new(MockSecretsRepository)
+			testRepo := new(MockEncryptedSecretsRepository)
 			testRepo.On("AddCredsRecord")
 
 			router := gin.Default()
-			router.POST(test.endpoint, saveHandler(testRepo))
+			router.POST(test.endpoint, saveHandler(testRepo, config))
 
 			req, err := http.NewRequest(test.requestType, test.endpoint, strings.NewReader(test.body))
 			assert.Nil(t, err)
@@ -129,8 +193,16 @@ func TestPingEndpoint(t *testing.T) {
 
 func TestGeneratePasswordEndpoint(t *testing.T) {
 	gin.SetMode(gin.TestMode)
+	config := model.Config{
+		Port:         80,
+		GeneratorURL: "generator",
+		DBUser:       "user",
+		DBHost:       "host",
+		DBPassword:   "password",
+		Key:          "TEST_KEY",
+	}
 
-	encryptedPassword, err := helper.EncryptMessageWithPassword([]byte("GENERATOR_KEY"), "passman_password")
+	encryptedPassword, err := helper.EncryptMessageWithPassword([]byte(config.Key), "passman_password")
 	assert.NoError(t, err)
 
 	var tests = []struct {
@@ -157,7 +229,7 @@ func TestGeneratePasswordEndpoint(t *testing.T) {
 			}
 
 			router := gin.Default()
-			router.GET(test.inputEndpoint, generateHandler("/testEndpoint", &mockClient))
+			router.GET(test.inputEndpoint, generateHandler("/testEndpoint", &mockClient, config))
 
 			req, err := http.NewRequest(http.MethodGet, test.inputEndpoint, nil)
 			assert.Nil(t, err)
