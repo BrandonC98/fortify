@@ -16,7 +16,7 @@ inputs:
   environment-file:
     description: 'The name of the environment configuration file to bake into the build'
     required: true
-    default: 'prod'
+    default: 'None'
 
   ecr-repository-name:
     description: 'The ECR repository name to push the image to'
