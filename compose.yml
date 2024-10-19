@@ -13,7 +13,6 @@ services:
     build:
       context: services/fortify
       args:
-        # ENV_FILE: services/fortify/configuration/it-fortify
         ENV_FILE: it-fortify
     container_name: fortify
     ports:
