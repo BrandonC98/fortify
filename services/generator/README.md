@@ -9,7 +9,6 @@ This service is apart of the Fortify project. It is a API that generates random 
 
 
 ## Getting started
-This service makes heavy use of a justfile for development.
 It's highly recommended to use the just commands over the normal commands as the just commands loads in the `.env` file's environment variables which is needed for some commands to work properly
 
 ### Common commands

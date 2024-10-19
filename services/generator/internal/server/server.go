@@ -24,13 +24,7 @@ func pingHandler(c *gin.Context) {
 
 func generateHandler(config model.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var key string
-		if gin.Mode() == "release" {
-			// use AWS Secrets manager to get key
-			println("Functionality not yet implmented")
-		} else {
-			key = "GENERATOR_KEY"
-		}
+		key := config.Key
 
 		plaintextPassword, err := g.GenerateRandString(g.RandNumber(config.StringMinLength, config.StringMaxLength))
 		if err != nil {
