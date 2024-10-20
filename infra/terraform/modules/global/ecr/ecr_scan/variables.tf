@@ -5,6 +5,6 @@ variable "scan_type" {
 }
 variable "scan_filter" {
   type        = string
-  description = "String filter to filter out scans on matched names"
-  default     = "test-image"
+  description = "String filter to match names to include in scanning"
+  default     = "*"
 }
