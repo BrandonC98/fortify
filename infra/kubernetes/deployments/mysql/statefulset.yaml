@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql-database
+spec:
+  serviceName: "mysql"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-database
+  template:
+    metadata:
+      labels:
+        app: mysql-database
+    spec:
+      containers:
+        - name: mysql-database
+          image: mysql:lts
+          env:
+            - name: MYSQL_DATABASE
+              value: fortify_db
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: fortify-secrets
+                  key: db_root_password
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: fortify-secrets
+                  key: db_username
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: fortify-secrets
+                  key: db_password
+          ports:
+          - containerPort: 3306
+            name: mysql
+          volumeMounts:
+          - name: mysql-volume-claim
+            mountPath: /var/lib/mysql
+  volumeClaimTemplates:
+    - metadata:
+        name: mysql-volume-claim
+      spec:
+        storageClassName: fortify-storage-class
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 5Gi

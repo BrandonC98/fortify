@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fortify-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fortify
+  template:
+    metadata:
+      labels:
+        app: fortify
+    spec:
+      containers:
+      - name: fortify
+        image: 339713193004.dkr.ecr.eu-west-2.amazonaws.com/fortify:1.0.2
+        ports: 
+            - containerPort: 9002
+        env:
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: fortify-secrets
+                  key: db_username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: fortify-secrets
+                  key: db_password
+            - name: ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: fortify-secrets
+                  key: encryption_key
+        envFrom:
+            - configMapRef:
+                name: fortify-config

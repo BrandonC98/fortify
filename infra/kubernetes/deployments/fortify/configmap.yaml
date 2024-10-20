@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fortify-config
+data:
+  DB_HOST: '100.67.115.90'
+  GENERATOR_URL: 'http://100.66.115.90'
+  GIN_MODE: 'release'
+  PORT: '80'
