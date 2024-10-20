@@ -14,8 +14,8 @@ gh run <SERVICE_NAME>-push-image.yml -F image-tag=<TAG> -F environment-file=<ENV
 Used when new version of a service's docker image should be stored in ECR for use in running the applications
 
 ## Good to know
-Currently supported serivces
-- `generator`
-- `fortify`
-
-This can also be triggered by running Action in the GitHub repository
+- Currently supported serivces
+    - `generator`
+    - `fortify`
+- This can also be triggered by running Action in the GitHub repository
+- Use `None` for environment files when using kubernetes
