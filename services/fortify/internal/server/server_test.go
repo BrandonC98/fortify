@@ -102,7 +102,6 @@ func TestShowEndpoint(t *testing.T) {
 				testRepo = new(MockEncryptedSecretsRepository)
 			} else {
 				testRepo = new(MockDecryptedSecretsRepository)
-
 			}
 
 			testRepo.On("retriveAllCreds")
