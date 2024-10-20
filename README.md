@@ -16,6 +16,7 @@ Fortify is a key value store that consists of an api web application and a mysql
 ![fortify](images/fortify-interface.png)
 
 ### Basic Diagram
+![fortify-diagram](images/fortify-diagram.png)
 
 ## Fortify
 Fortify a web application that serves as the main service in this project. It is written in Go and uses Gin to service a frontend UI to the user. Fortify is where the user can input their key name and value they want to store. It so interacts with other components of the project such as thedatabase and the generator API. All k/v pairs stored in Fortify can be retrived by the show button
