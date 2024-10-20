@@ -1,7 +1,7 @@
 # Fortify
 This service provides the web interface for storing key/value pair.
 
-## requisite
+## prerequisites
 - Go
 - Docker
 - Golangci-linter
