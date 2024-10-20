@@ -32,16 +32,6 @@ build-image:
 lint:
 	golangci-lint run ./... --verbose
 
-[confirm]
-set-secrets db-user db-password:
-	echo "{{db-user}}" | gh secret set FORTIFY_DB_USER -a actions -b -
-	echo "{{db-password}}" | gh secret set FORTIFY_DB_PASSWORD -a actions -b -
-
-build-and-push:
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITROY:$IMAGE_TAG .
-        echo "Push image"
-        docker push $ECR_REGISTRY/$ECR_REPOSITROY:$IMAGE_TAG
-
 # Generate a .env file
 [no-cd]
 gen-dotenv mode="debug" port="9002" generator-url="http://localhost:8080" db-user="fortifyUser" db-host="mysql" db-password="fortifyPassword":

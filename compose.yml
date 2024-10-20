@@ -3,7 +3,6 @@ services:
     build: 
       context: services/generator
       args:
-        # ENV_FILE: services/generator/configuration/it
         ENV_FILE: it
     container_name: generator
     ports:
